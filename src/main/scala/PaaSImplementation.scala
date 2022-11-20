@@ -1,7 +1,7 @@
-import utils.configs.HostConfig
+import utils.configs.{HostConfig, PaaSParamsConfig}
 import utils.{CreateLogger, HostUtils, VMUtils}
 
-object SaaSImplementation {
+object PaaSImplementation {
 
   import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
   import org.cloudbus.cloudsim.cloudlets.CloudletSimple
@@ -12,43 +12,54 @@ object SaaSImplementation {
   import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
   import org.cloudbus.cloudsim.vms.VmSimple
   import org.cloudsimplus.builders.tables.CloudletsTableBuilder
+  import utils.CloudletUtils
   import utils.HostUtils.*
   import utils.VMUtils.*
-  import utils.CloudletUtils
-  import java.util.List
   import utils.configs.SaaSParamsConfig
 
+  import java.util.List
+
+  //vm parameters from user
+  val vmtype = PaaSParamsConfig.getVMType
+  val vmcount = PaaSParamsConfig.getVMCount
+
+  //application parameters form user
+  val minimumUtilizationPaaS = PaaSParamsConfig.getApplicationMinUtil
+  val maximumUtilizationPaaS = PaaSParamsConfig.getApplicationMaxUtil
+  val lengthPaaS = PaaSParamsConfig.getCloudletLen
+  val peCountPaaS = PaaSParamsConfig.getPECount
+  val applicatonCount = PaaSParamsConfig.getInstanceCount
 
   @main
-  def saaSImplementation(): Unit = {
+  def paaSImplementation(): Unit = {
 
     //logger instantiation
-    val logger = CreateLogger(classOf[SaaSImplementation.type])
+    val logger = CreateLogger(classOf[PaaSImplementation.type])
 
     //Creates a CloudSim object to initialize the simulation.
-    val SaaS_simulation = new CloudSim
+    val PaaS_simulation = new CloudSim
 
     //Creates a Broker that will act on behalf of a cloud user (customer).
-    val broker = new DatacenterBrokerSimple(SaaS_simulation)
+    val broker = new DatacenterBrokerSimple(PaaS_simulation)
 
     //Creates a Datacenter with a list of Hosts.
-    val dc0 = new DatacenterSimple(SaaS_simulation, utils.HostUtils.getSimpleHosts(10))
+    val dc0 = new DatacenterSimple(PaaS_simulation, utils.HostUtils.getSimpleHosts(20))
 
     //create VMs and submit to broker
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
-    broker.submitVmList(utils.VMUtils.getVMSimple("MEDIUM",20))
+    broker.submitVmList(utils.VMUtils.getVMSimple(vmtype,vmcount))
 
     //Create cloudletts and submit to broker
-    broker.submitCloudletList(CloudletUtils.getCloudletSimple(SaaSParamsConfig.getApplicationType,SaaSParamsConfig.getInstanceCount))
+    broker.submitCloudletList(CloudletUtils.getUserApplicationCloudlet(minimumUtilizationPaaS,maximumUtilizationPaaS,lengthPaaS,applicatonCount,peCountPaaS))
 
     /*Starts the simulation and waits all cloudlets to be executed, automatically
     stopping when there is no more events to process.*/
-    SaaS_simulation.start
+    PaaS_simulation.start
 
     /*Prints the results when the simulation is over*/
-    logger.info("starting SaaS simulation")
+    logger.info("starting PaaS simulation")
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
-    logger.info("end of SaaS simulation")
+    logger.info("End of PaaS simulation")
   }
 
 }

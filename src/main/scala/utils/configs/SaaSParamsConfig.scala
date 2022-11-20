@@ -20,7 +20,7 @@ object SaaSParamsConfig {
     try {
       val op = config.getString("SaaS.cloudlet_type")
       logger.debug("(SaaS) Application Selected : " + op)
-      op
+      if (op=="A" || op=="B") then op else "A"
     }
     catch {
       case e: Exception => {
@@ -35,7 +35,7 @@ object SaaSParamsConfig {
     try {
       val op = config.getInt("SaaS.cloudlet_count")
       logger.debug("No. of Cloudlets : " + op)
-      op
+      if op>40 then 40 else op
     }
     catch {
       case e: Exception => {

@@ -2,7 +2,7 @@ package utils
 
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
-import utils.configs.CloudletConfig
+import utils.configs.{CloudletConfig, PaaSParamsConfig}
 
 import scala.jdk.CollectionConverters.*
 import scala.compiletime.ops.string.Length
@@ -19,7 +19,11 @@ object CloudletUtils {
   val lengthB = CloudletConfig.getLen_B
   val peCountA = CloudletConfig.getPeCount_A
   val peCountB = CloudletConfig.getPeCount_B
+
+  //PaaS user's application parameters
+
   
+
   
   //returns list of cloudlets
   def getCloudletSimple(cl_type:String,cl_numbers: Int): java.util.List[CloudletSimple] = {
@@ -34,5 +38,18 @@ object CloudletUtils {
       element => new CloudletSimple(cl_lenght, pe_required, utilizationModel)
     ).asJava
   }
+
+  //returns list of custom cloudlets based on user requirements
+  def getUserApplicationCloudlet(min_util:Double,max_util:Double,cl_len:Int,cl_numbers:Int,pe_required:Int): java.util.List[CloudletSimple] = {
+
+    val utilizationModel = new UtilizationModelDynamic(min_util, max_util)
+    scala.collection.immutable.List.tabulate(cl_numbers)(
+      element => new CloudletSimple(cl_len, pe_required, utilizationModel)
+    ).asJava
+
+  }
+
+
+
 
 }

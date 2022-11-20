@@ -1,11 +1,14 @@
 package utils
 
 import org.cloudbus.cloudsim.hosts.HostSimple
+import org.cloudbus.cloudsim.schedulers.cloudlet.{CloudletSchedulerCompletelyFair, CloudletSchedulerSpaceShared, CloudletSchedulerTimeShared}
+import org.cloudbus.cloudsim.vms.Vm
 import org.cloudbus.cloudsim.vms.VmSimple
 import utils.HostUtils.{bw, getPEList, ram, storage}
 import utils.configs.VMConfigSmall
 import utils.configs.VMConfigMed
 import utils.configs.VMConfigLarge
+
 import scala.jdk.CollectionConverters.*
 
 
@@ -35,7 +38,7 @@ object VMUtils {
   
   
   //  retuns list of VMs
-  def getVMSimple ( vmtype :String , vmcount: Int , Scheduler : String = "" ): java.util.List[VmSimple] = {
+  def getVMSimple ( vmtype :String , vmcount: Int , Scheduler : String = "" ): java.util.List[Vm] = {
 
     val ram = if(vmtype == "SMALL") then ram_small else if(vmtype == "MEDIUM") then ram_med else ram_large
     val storage = if(vmtype == "SMALL") then storage_small else if(vmtype == "MEDIUM") then storage_med else storage_large
@@ -44,11 +47,19 @@ object VMUtils {
     val pe_count = if(vmtype == "SMALL") then pe_count_small else if(vmtype == "MEDIUM") then pe_count_med else pe_count_large
 
     scala.collection.immutable.List.tabulate(vmcount)(
-      element => new VmSimple( pe_cap,pe_count)
+      element => new VmSimple( pe_cap,pe_count).setBw(bw).setRam(ram).setSize(storage)
     ).asJava
 
   }
 
+  def getCustomVM(ram:Int,storage:Int,bw:Int,mipsCapacity:Int,peCount:Int,vmCount:Int,scheduler: String): java.util.List[Vm] = {
+
+    val cloudletScheduler = if (scheduler == "FAIR") then new CloudletSchedulerCompletelyFair() else if(scheduler == "SPACESHARED") then new CloudletSchedulerSpaceShared() else new CloudletSchedulerTimeShared()
+    scala.collection.immutable.List.tabulate(vmCount)(
+      element => new VmSimple(mipsCapacity, peCount,cloudletScheduler).setBw(bw).setRam(ram).setSize(storage)
+    ).asJava
+
+  }
 
 
 }
