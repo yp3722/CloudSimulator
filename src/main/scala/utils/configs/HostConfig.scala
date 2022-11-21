@@ -89,5 +89,64 @@ object HostConfig {
     }
 
   }
+  
+  
+  def getRamCost: Double = {
+    try {
+      val op = config.getDouble("hostConfig.ramCost")
+      logger.debug("Hostconfig ramCost : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find ramCost in conf")
+        0.002
+      }
+    }
+  }
+
+  def getStorageCost: Double = {
+    try {
+      val op = config.getDouble("hostConfig.storageCost")
+      logger.debug("Hostconfig storageCost : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find storageCost in conf")
+        0.0001
+      }
+    }
+  }
+
+  def getBWCost: Double = {
+    try {
+      val op = config.getDouble("hostConfig.bwCost")
+      logger.debug("Hostconfig BWCost : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find BWCost in conf")
+        0.0005
+      }
+    }
+  }
+
+  def getTimeCost: Double = {
+    try {
+      val op = config.getDouble("hostConfig.costPerSec")
+      logger.debug("Hostconfig costPerSec : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find costPerSec in conf")
+        0.001
+      }
+    }
+  }
+  
+  
 
 }

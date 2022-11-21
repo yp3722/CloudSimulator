@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
 import org.cloudbus.cloudsim.vms.VmSimple
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder
 import utils.CloudletUtils
+import utils.CostUtils.printTotalVmsCost
 import utils.HostUtils.*
 import utils.VMUtils.getCustomVM
 import utils.configs.SaaSParamsConfig
@@ -36,6 +37,12 @@ object IaaSImplementation {
   val peCountIaaS = IaaSParamsConfig.getPECount
   val applicatonCount = IaaSParamsConfig.getInstanceCount
 
+  //Datacenter cost params
+  val ramCost = HostConfig.getRamCost
+  val timeCost = HostConfig.getTimeCost
+  val storageCost = HostConfig.getStorageCost
+  val BWCost = HostConfig.getBWCost
+
   @main
   def iaaSImplementation(): Unit = {
 
@@ -50,6 +57,12 @@ object IaaSImplementation {
 
     //Creates a Datacenter with a list of Hosts.
     val dc0 = new DatacenterSimple(IaaS_simulation, utils.HostUtils.getSimpleHosts(30))
+
+    dc0.getCharacteristics()
+      .setCostPerSecond(timeCost)
+      .setCostPerMem(ramCost)
+      .setCostPerStorage(storageCost)
+      .setCostPerBw(BWCost);
 
     //create VMs and submit to broker
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
@@ -66,6 +79,8 @@ object IaaSImplementation {
     logger.info("starting IaaS simulation")
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
     logger.info("End of IaaS simulation")
+    
+    printTotalVmsCost(broker)
   }
 
 }

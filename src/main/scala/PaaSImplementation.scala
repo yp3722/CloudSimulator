@@ -1,23 +1,24 @@
 import utils.configs.{HostConfig, PaaSParamsConfig}
 import utils.{CreateLogger, HostUtils, VMUtils}
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
+import org.cloudbus.cloudsim.cloudlets.CloudletSimple
+import org.cloudbus.cloudsim.core.CloudSim
+import org.cloudbus.cloudsim.datacenters.DatacenterSimple
+import org.cloudbus.cloudsim.hosts.HostSimple
+import org.cloudbus.cloudsim.resources.PeSimple
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
+import org.cloudbus.cloudsim.vms.VmSimple
+import org.cloudsimplus.builders.tables.CloudletsTableBuilder
+import utils.CloudletUtils
+import utils.CostUtils.printTotalVmsCost
+import utils.HostUtils.*
+import utils.VMUtils.*
+import utils.configs.SaaSParamsConfig
+
+import java.util.List
 
 object PaaSImplementation {
 
-  import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
-  import org.cloudbus.cloudsim.cloudlets.CloudletSimple
-  import org.cloudbus.cloudsim.core.CloudSim
-  import org.cloudbus.cloudsim.datacenters.DatacenterSimple
-  import org.cloudbus.cloudsim.hosts.HostSimple
-  import org.cloudbus.cloudsim.resources.PeSimple
-  import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
-  import org.cloudbus.cloudsim.vms.VmSimple
-  import org.cloudsimplus.builders.tables.CloudletsTableBuilder
-  import utils.CloudletUtils
-  import utils.HostUtils.*
-  import utils.VMUtils.*
-  import utils.configs.SaaSParamsConfig
-
-  import java.util.List
 
   //vm parameters from user
   val vmtype = PaaSParamsConfig.getVMType
@@ -29,6 +30,12 @@ object PaaSImplementation {
   val lengthPaaS = PaaSParamsConfig.getCloudletLen
   val peCountPaaS = PaaSParamsConfig.getPECount
   val applicatonCount = PaaSParamsConfig.getInstanceCount
+
+  //Datacenter cost params
+  val ramCost = HostConfig.getRamCost
+  val timeCost = HostConfig.getTimeCost
+  val storageCost = HostConfig.getStorageCost
+  val BWCost = HostConfig.getBWCost
 
   @main
   def paaSImplementation(): Unit = {
@@ -44,6 +51,11 @@ object PaaSImplementation {
 
     //Creates a Datacenter with a list of Hosts.
     val dc0 = new DatacenterSimple(PaaS_simulation, utils.HostUtils.getSimpleHosts(20))
+    dc0.getCharacteristics()
+      .setCostPerSecond(timeCost)
+      .setCostPerMem(ramCost)
+      .setCostPerStorage(storageCost)
+      .setCostPerBw(BWCost);
 
     //create VMs and submit to broker
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
@@ -60,6 +72,8 @@ object PaaSImplementation {
     logger.info("starting PaaS simulation")
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
     logger.info("End of PaaS simulation")
+
+    printTotalVmsCost(broker)
   }
 
 }
