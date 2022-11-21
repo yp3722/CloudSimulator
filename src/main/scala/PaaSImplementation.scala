@@ -1,5 +1,5 @@
-import utils.configs.{HostConfig, PaaSParamsConfig}
-import utils.{CreateLogger, HostUtils, VMUtils}
+import utils.configs.{DataCenterConfig, HostConfig, PaaSParamsConfig, SaaSParamsConfig}
+import utils.{CloudletUtils, CreateLogger, DataCenterUtils, HostUtils, PowerUtils, VMUtils}
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple
 import org.cloudbus.cloudsim.core.CloudSim
@@ -9,11 +9,9 @@ import org.cloudbus.cloudsim.resources.PeSimple
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
 import org.cloudbus.cloudsim.vms.VmSimple
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder
-import utils.CloudletUtils
 import utils.CostUtils.printTotalVmsCost
 import utils.HostUtils.*
 import utils.VMUtils.*
-import utils.configs.SaaSParamsConfig
 
 import java.util.List
 
@@ -37,7 +35,7 @@ object PaaSImplementation {
   val storageCost = HostConfig.getStorageCost
   val BWCost = HostConfig.getBWCost
 
-  @main
+  
   def paaSImplementation(): Unit = {
 
     //logger instantiation
@@ -50,7 +48,7 @@ object PaaSImplementation {
     val broker = new DatacenterBrokerSimple(PaaS_simulation)
 
     //Creates a Datacenter with a list of Hosts.
-    val dc0 = new DatacenterSimple(PaaS_simulation, utils.HostUtils.getSimpleHosts(20))
+    val dc0 = DataCenterUtils.getSimpleDataCenter(PaaS_simulation)
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
       .setCostPerMem(ramCost)
@@ -74,6 +72,7 @@ object PaaSImplementation {
     logger.info("End of PaaS simulation")
 
     printTotalVmsCost(broker)
+    PowerUtils.getPowerConsumptionStats(dc0.getHostList)
   }
 
 }

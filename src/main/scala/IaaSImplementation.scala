@@ -1,5 +1,5 @@
-import utils.configs.{HostConfig, IaaSParamsConfig}
-import utils.{CreateLogger, HostUtils, VMUtils}
+import utils.configs.{DataCenterConfig, HostConfig, IaaSParamsConfig, SaaSParamsConfig}
+import utils.{CloudletUtils, CreateLogger, DataCenterUtils, HostUtils, PowerUtils, VMUtils}
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple
 import org.cloudbus.cloudsim.core.CloudSim
@@ -9,11 +9,9 @@ import org.cloudbus.cloudsim.resources.PeSimple
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic
 import org.cloudbus.cloudsim.vms.VmSimple
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder
-import utils.CloudletUtils
 import utils.CostUtils.printTotalVmsCost
 import utils.HostUtils.*
 import utils.VMUtils.getCustomVM
-import utils.configs.SaaSParamsConfig
 
 import java.util.List
 
@@ -43,7 +41,7 @@ object IaaSImplementation {
   val storageCost = HostConfig.getStorageCost
   val BWCost = HostConfig.getBWCost
 
-  @main
+  
   def iaaSImplementation(): Unit = {
 
     //logger instantiation
@@ -55,8 +53,8 @@ object IaaSImplementation {
     //Creates a Broker that will act on behalf of a cloud user (customer).
     val broker = new DatacenterBrokerSimple(IaaS_simulation)
 
-    //Creates a Datacenter with a list of Hosts.
-    val dc0 = new DatacenterSimple(IaaS_simulation, utils.HostUtils.getSimpleHosts(30))
+    //Creates a Datacenter with a list of Hosts
+    val dc0 = DataCenterUtils.getSimpleDataCenter(IaaS_simulation)
 
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
@@ -81,6 +79,8 @@ object IaaSImplementation {
     logger.info("End of IaaS simulation")
     
     printTotalVmsCost(broker)
+    PowerUtils.getPowerConsumptionStats(dc0.getHostList)
+
   }
 
 }

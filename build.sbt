@@ -11,6 +11,7 @@ val generexVersion = "1.0.2"
 val cloudSimVerion = "7.3.0"
 
 lazy val root = (project in file("."))
+  .enablePlugins(DockerPlugin,JavaAppPackaging)
   .settings(
     name := "cloudSimulator"
   )
@@ -27,3 +28,4 @@ libraryDependencies += "org.scalatest" %% "scalatest-featurespec" % scalacticVer
 libraryDependencies += "com.typesafe" % "config" % typesafeConfigVersion
 
 libraryDependencies += "org.cloudsimplus" % "cloudsim-plus" % cloudSimVerion
+dockerBaseImage := "openjdk:17"

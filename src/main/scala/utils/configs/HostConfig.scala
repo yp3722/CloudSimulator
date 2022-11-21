@@ -146,7 +146,107 @@ object HostConfig {
       }
     }
   }
-  
-  
+
+  def getStartupDelay: Double = {
+    try {
+      val op = config.getDouble("hostConfig.startupDelay")
+      logger.debug("Hostconfig startupDelay : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find startupDelay in conf")
+        5.0
+      }
+    }
+  }
+
+  def getShutdownDelay: Double = {
+    try {
+      val op = config.getDouble("hostConfig.shutdownDelay")
+      logger.debug("Hostconfig shutdownDelay : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find shutdownDelay in conf")
+        3.0
+      }
+    }
+  }
+
+  def getStartupPower: Double = {
+    try {
+      val op = config.getDouble("hostConfig.startupPower")
+      logger.debug("Hostconfig startupPower : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find startupPower in conf")
+        5.0
+      }
+    }
+  }
+
+  def getShutdownPower: Double = {
+    try {
+      val op = config.getDouble("hostConfig.shutdownPower")
+      logger.debug("Hostconfig shutdownPower : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find shutdownPower in conf")
+        3.0
+      }
+    }
+  }
+
+  def getStaticPower: Double = {
+    try {
+      val op = config.getDouble("hostConfig.staticPower")
+      logger.debug("Hostconfig staticPower : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find staticPower in conf")
+        35.0
+      }
+    }
+  }
+
+  def getMaxPower: Double = {
+    try {
+      val op = config.getDouble("hostConfig.maxPower")
+      logger.debug("Hostconfig maxPower : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find maxPower in conf")
+        35.0
+      }
+    }
+  }
+
+  def getVmScheduler: String = {
+    try {
+      val op = config.getString("hostConfig.vmScheduler")
+      logger.debug("Hostconfig vmScheduler : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find vmScheduler in conf")
+        "TIME"
+      }
+    }
+  }
+
+
+
+
 
 }

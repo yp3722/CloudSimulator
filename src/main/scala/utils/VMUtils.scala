@@ -56,7 +56,10 @@ object VMUtils {
 
     val cloudletScheduler = if (scheduler == "FAIR") then new CloudletSchedulerCompletelyFair() else if(scheduler == "SPACESHARED") then new CloudletSchedulerSpaceShared() else new CloudletSchedulerTimeShared()
     scala.collection.immutable.List.tabulate(vmCount)(
-      element => new VmSimple(mipsCapacity, peCount,cloudletScheduler).setBw(bw).setRam(ram).setSize(storage)
+      element => {
+        val v = new VmSimple(mipsCapacity, peCount, cloudletScheduler).setBw(bw).setRam(ram).setSize(storage)
+        v
+      }
     ).asJava
 
   }

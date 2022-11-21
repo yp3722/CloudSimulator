@@ -1,5 +1,5 @@
 import utils.configs.HostConfig
-import utils.{CreateLogger, HostUtils, VMUtils}
+import utils.{CloudletUtils, CreateLogger, DataCenterUtils, HostUtils, PowerUtils, VMUtils}
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple
 import org.cloudbus.cloudsim.core.CloudSim
@@ -11,7 +11,6 @@ import org.cloudbus.cloudsim.vms.VmSimple
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder
 import utils.HostUtils.*
 import utils.VMUtils.*
-import utils.CloudletUtils
 import utils.CostUtils.printTotalVmsCost
 
 import java.util.List
@@ -31,7 +30,7 @@ object SaaSImplementation {
   val BWCost = HostConfig.getBWCost
 
 
-  @main
+  
   def saaSImplementation(): Unit = {
 
     //Creates a CloudSim object to initialize the simulation.
@@ -41,7 +40,7 @@ object SaaSImplementation {
     val broker = new DatacenterBrokerSimple(SaaS_simulation)
 
     //Creates a Datacenter with a list of Hosts.
-    val dc0 = new DatacenterSimple(SaaS_simulation, utils.HostUtils.getSimpleHosts(10))
+    val dc0 = DataCenterUtils.getSimpleDataCenter(SaaS_simulation)
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
       .setCostPerMem(ramCost)
@@ -65,6 +64,7 @@ object SaaSImplementation {
     logger.info("end of SaaS simulation")
 
     printTotalVmsCost(broker)
+    PowerUtils.getPowerConsumptionStats(dc0.getHostList)
   }
 
 
