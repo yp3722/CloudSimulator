@@ -28,6 +28,7 @@ object PaaSImplementation {
   val lengthPaaS = PaaSParamsConfig.getCloudletLen
   val peCountPaaS = PaaSParamsConfig.getPECount
   val applicatonCount = PaaSParamsConfig.getInstanceCount
+  val enableDelay = PaaSParamsConfig.getSubmissionDelay
 
   //Datacenter cost params
   val ramCost = HostConfig.getRamCost
@@ -35,7 +36,7 @@ object PaaSImplementation {
   val storageCost = HostConfig.getStorageCost
   val BWCost = HostConfig.getBWCost
 
-  
+  @main
   def paaSImplementation(): Unit = {
 
     //logger instantiation
@@ -60,7 +61,7 @@ object PaaSImplementation {
     broker.submitVmList(utils.VMUtils.getVMSimple(vmtype,vmcount))
 
     //Create cloudletts and submit to broker
-    broker.submitCloudletList(CloudletUtils.getUserApplicationCloudlet(minimumUtilizationPaaS,maximumUtilizationPaaS,lengthPaaS,applicatonCount,peCountPaaS))
+    broker.submitCloudletList(CloudletUtils.getUserApplicationCloudlet(minimumUtilizationPaaS,maximumUtilizationPaaS,lengthPaaS,applicatonCount,peCountPaaS,enableDelay))
 
     /*Starts the simulation and waits all cloudlets to be executed, automatically
     stopping when there is no more events to process.*/

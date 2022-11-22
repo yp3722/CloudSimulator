@@ -10,11 +10,14 @@ object DataCenterUtils {
 
   val allocationPolicy = DataCenterConfig.getAllocationPolicy
   val hostCount = DataCenterConfig.getHostCount
+  val schedulingInterval = DataCenterConfig.getInterval
 
 
   def getSimpleDataCenter(sim:CloudSim): DatacenterSimple ={
     val allocPolicy = if (allocationPolicy=="BESTFIT") then new VmAllocationPolicyBestFit() else if (allocationPolicy=="FIRSTFIT") then new VmAllocationPolicyFirstFit() else if (allocationPolicy=="ROUNDROBIN") then new VmAllocationPolicyRoundRobin() else new VmAllocationPolicySimple()
-    new DatacenterSimple(sim,HostUtils.getSimpleHosts(hostCount),allocPolicy)
+    val dc = new DatacenterSimple(sim,HostUtils.getSimpleHosts(hostCount),allocPolicy)
+    dc.setSchedulingInterval(schedulingInterval)
+    dc
   }
 
 }

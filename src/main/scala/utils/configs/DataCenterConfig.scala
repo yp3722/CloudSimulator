@@ -43,5 +43,19 @@ object DataCenterConfig {
     }
   }
 
+  def getInterval: Int = {
+    try {
+      val op = config.getInt("dataCenterConfig.interval")
+      logger.debug("interval set to : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find interval in conf")
+        1
+      }
+    }
+  }
+
 
 }

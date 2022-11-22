@@ -30,7 +30,7 @@ object SaaSImplementation {
   val BWCost = HostConfig.getBWCost
 
 
-  
+  @main
   def saaSImplementation(): Unit = {
 
     //Creates a CloudSim object to initialize the simulation.

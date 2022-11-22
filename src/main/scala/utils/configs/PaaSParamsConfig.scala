@@ -91,6 +91,21 @@ object PaaSParamsConfig {
 
   }
 
+  def getSubmissionDelay: Boolean = {
+    try {
+      val op = config.getString("PaaS.application.EnableSubmissionDelay")
+      logger.debug("(PaaS) EnableSubmissionDelay : " + op)
+      if (op == "TRUE") true else false
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find EnableSubmissionDelay in config")
+        false
+      }
+    }
+
+  }
+
   def getVMType: String = {
     try {
       val op = config.getString("PaaS.vmType")

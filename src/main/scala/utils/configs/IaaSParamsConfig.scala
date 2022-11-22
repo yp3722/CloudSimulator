@@ -2,7 +2,6 @@ package utils.configs
 
 import com.typesafe.config.ConfigFactory
 import utils.CreateLogger
-import utils.configs.PaaSParamsConfig.{config, logger}
 
 object IaaSParamsConfig {
 
@@ -122,12 +121,12 @@ object IaaSParamsConfig {
     def getApplicationMinUtil: Double = {
       try {
         val op = config.getDouble("IaaS.application.minUtil")
-        logger.debug("(PaaS) Min Util : " + op)
+        logger.debug("(IaaS) Min Util : " + op)
         op
       }
       catch {
         case e: Exception => {
-          logger.error(" (PaaS) No minUtil found in config")
+          logger.error(" (IaaS) No minUtil found in config")
           0.5
         }
       }
@@ -137,12 +136,12 @@ object IaaSParamsConfig {
     def getApplicationMaxUtil: Double = {
       try {
         val op = config.getDouble("IaaS.application.maxUtil")
-        logger.debug("(PaaS) Max Util : " + op)
+        logger.debug("(IaaS) Max Util : " + op)
         op
       }
       catch {
         case e: Exception => {
-          logger.error(" (PaaS) No maxUtil found in config")
+          logger.error(" (IaaS) No maxUtil found in config")
           1
         }
       }
@@ -152,12 +151,12 @@ object IaaSParamsConfig {
     def getCloudletLen: Int = {
       try {
         val op = config.getInt("IaaS.application.length")
-        logger.debug("(PaaS) Cloudlet Length : " + op)
+        logger.debug("(IaaS) Cloudlet Length : " + op)
         op
       }
       catch {
         case e: Exception => {
-          logger.error(" (PaaS) No lenght found in config")
+          logger.error(" (IaaS) No lenght found in config")
           10000
         }
       }
@@ -194,5 +193,62 @@ object IaaSParamsConfig {
 
     }
 
+    def getSubmissionDelay: Boolean = {
+      try {
+        val op = config.getString("IaaS.application.EnableSubmissionDelay")
+        logger.debug("(IaaS) EnableSubmissionDelay : " + op)
+        if (op == "TRUE") true else false
+      }
+      catch {
+        case e: Exception => {
+          logger.error(" Cant find EnableSubmissionDelay in config")
+          false
+        }
+      }
 
+    }
+
+  def getVerticalScalingEnabled: Boolean = {
+    try {
+      val op = config.getString("IaaS.autoScaling.enabled")
+      logger.debug("(IaaS) autoScaling : " + op)
+      if (op == "TRUE") true else false
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find autoScaling in config")
+        false
+      }
+    }
+
+  }
+
+  def getLowerUtilThreshold: Double = {
+    try {
+      val op = config.getDouble("IaaS.autoScaling.loweUtilThreshold")
+      logger.debug("(IaaS) loweUtilThreshold : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find loweUtilThreshold in config")
+        0.3
+      }
+    }
+  }
+
+  def getUpperUtilThreshold: Double = {
+    try {
+      val op = config.getDouble("IaaS.autoScaling.upperUtilThreshold")
+      logger.debug("(IaaS) upperUtilThreshold : " + op)
+      op
+    }
+    catch {
+      case e: Exception => {
+        logger.error(" Cant find upperUtilThreshold in config")
+        0.7
+      }
+    }
+  }
+    
 }
