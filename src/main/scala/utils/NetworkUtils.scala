@@ -23,9 +23,10 @@ object NetworkUtils {
   val bw_d0_d1 = NetworkConfig.getBwLink_d0d1
   val lat_d0_d1 = NetworkConfig.getLatencyLink_d0d1
 
+  //create and add brite network topology to simulation
   def createNetwork(simulation: CloudSim, d0:DatacenterSimple, d1:DatacenterSimple, b0:DatacenterBrokerSimple, b1:DatacenterBrokerSimple): Unit =
   {
-
+    
     val networkTopology = new BriteNetworkTopology
     simulation.setNetworkTopology(networkTopology)
     networkTopology.addLink(d0, b0, bw_b0_d0, lat_b0_d0)

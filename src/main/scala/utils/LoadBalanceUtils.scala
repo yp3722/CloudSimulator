@@ -21,6 +21,7 @@ object LoadBalanceUtils {
   val peReqA = ClientConfig.getClientAPeReq
   val peReqB = ClientConfig.getClientBPeReq
 
+  //Maps cloudlettes to datacenter based on proximity to datacenters
   def loadBalance(b0:DatacenterBrokerSimple,b1:DatacenterBrokerSimple): Unit ={
 
     if (proximityA==0) then

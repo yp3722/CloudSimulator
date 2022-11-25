@@ -13,11 +13,11 @@ object IaaSParamsConfig {
   val config = ConfigFactory.parseResources("Override.conf").withFallback(defaultConfig).resolve()
 
   //Get parameter values from config file
-  
   def getVRam: Int = {
     try {
       val op = config.getInt("IaaS.VM.ram")
       logger.debug("VMConfig Ram size in MB : " + op)
+      //prevents illegal values from being set
       if (op > 32000) then 16000 else op
     }
     catch {
@@ -33,6 +33,7 @@ object IaaSParamsConfig {
     try {
       val op = config.getInt("IaaS.VM.storage")
       logger.debug("VMConfig Storage size in MB : " + op)
+      //prevents illegal values from being set
       if (op>2048000) then 250000 else op
     }
     catch {
@@ -48,6 +49,7 @@ object IaaSParamsConfig {
     try {
       val op = config.getInt("IaaS.VM.bw")
       logger.debug("VMConfig bandwidth size in MB : " + op)
+      //prevents illegal values from being set
       if (op>10000) then 1000 else op
     }
     catch {
@@ -63,6 +65,7 @@ object IaaSParamsConfig {
     try {
       val op = config.getInt("IaaS.VM.mipsCapacity")
       logger.debug("VMConfig VPE capacity in MIPS : " + op)
+      //prevents illegal values from being set
       if (op>50000) then 10000 else op
     }
     catch {
@@ -78,6 +81,7 @@ object IaaSParamsConfig {
     try {
       val op = config.getInt("IaaS.VM.peCount")
       logger.debug("VPE count : " + op)
+      //prevents illegal values from being set
       if (op>16) then 8 else op
     }
     catch {
@@ -93,6 +97,7 @@ object IaaSParamsConfig {
     try {
       val op = config.getInt("IaaS.VM.vmCount")
       logger.debug("VM count : " + op)
+      //prevents illegal values from being set
       op
     }
     catch {

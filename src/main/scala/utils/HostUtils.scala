@@ -7,7 +7,6 @@ import org.cloudbus.cloudsim.resources.PeSimple
 import org.cloudbus.cloudsim.schedulers.vm.{VmSchedulerSpaceShared, VmSchedulerTimeShared}
 import utils.configs.HostConfig
 import utils.CreateLogger
-
 import scala.jdk.CollectionConverters.*
 import scala.collection.immutable.List
 import java.util.List
@@ -15,7 +14,7 @@ import java.util.List
 object HostUtils {
   val logger = CreateLogger(classOf[HostUtils.type]) //logger instantiation
 
-  //initialize parameters
+  //initialize parameters 
   val ram = HostConfig.getRam;
   val storage = HostConfig.getStorage;
   val bw = HostConfig.getBW;
@@ -41,7 +40,8 @@ object HostUtils {
     scala.collection.immutable.List.tabulate(hostCount)(
       element => {
         val h = new HostSimple(ram, bw, storage, getPEList().asJava)
-
+        
+        //add powermodel to hosts
         h.setPowerModel(new PowerModelHostSimple(MaxPower, StaticPower).setStartupDelay(startupDelay)
           .setShutDownDelay(shutdownDelay)
           .setStartupPower(startupPower)
@@ -50,6 +50,8 @@ object HostUtils {
         h.setRamProvisioner(new ResourceProvisionerSimple())
         h.setBwProvisioner(new ResourceProvisionerSimple())
         h.enableUtilizationStats()
+        
+        //set vm scheduler
         if (vmScheduler == "SPACE") then  h.setVmScheduler(new VmSchedulerSpaceShared()) else h.setVmScheduler(VmSchedulerTimeShared())
         h
       }

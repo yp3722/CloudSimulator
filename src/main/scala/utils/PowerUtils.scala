@@ -11,7 +11,7 @@ object PowerUtils {
   val logger = CreateLogger(classOf[PowerUtils.type])
 
 
-
+   //calculate and print power consumption stats
    def getPowerConsumptionStats(hostList: java.util.List[HostSimple]): Unit = {
 
     val hosts = hostList.asScala
@@ -19,7 +19,6 @@ object PowerUtils {
     //map each list of vm in list of double
     val cpuUtilList = hosts.map((h) => {
       val vms = h.getVmList.asScala
-      //set getUtilizationHistory() enable for each vm inorder to view power stats (requires downgrade to cloudsim 4.0)
       val utilMean = h.getCpuUtilizationStats.getMean
       val watts = h.getPowerModel.getPower(utilMean)
       watts

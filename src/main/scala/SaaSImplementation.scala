@@ -39,7 +39,7 @@ object SaaSImplementation {
     //Creates a Broker that will act on behalf of a cloud user (customer).
     val broker = new DatacenterBrokerSimple(SaaS_simulation)
 
-    //Creates a Datacenter with a list of Hosts.
+    //Creates a Datacenter with a list of Hosts and add cost simulation data
     val dc0 = DataCenterUtils.getSimpleDataCenter(SaaS_simulation)
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
@@ -48,7 +48,6 @@ object SaaSImplementation {
       .setCostPerBw(BWCost);
 
     //create VMs and submit to broker
-    //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
     broker.submitVmList(utils.VMUtils.getVMSimple("MEDIUM",20))
 
     //Create cloudletts and submit to broker
@@ -61,9 +60,11 @@ object SaaSImplementation {
     /*Prints the results when the simulation is over*/
     logger.info("starting SaaS simulation")
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
-    logger.info("end of SaaS simulation")
-
+    
+    //Print Cost data
     printTotalVmsCost(broker)
+    
+    //Print Powerconsumption data
     PowerUtils.getPowerConsumptionStats(dc0.getHostList)
   }
 

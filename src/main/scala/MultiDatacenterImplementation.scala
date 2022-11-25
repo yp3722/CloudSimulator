@@ -45,7 +45,7 @@ import java.util.List
   //autoscaling params
   val enableVerticalScaling = IaaSParamsConfig.getVerticalScalingEnabled
 
-  //List of Vms
+  //List of Vms which can be configured in Override.conf under IaaS.vm 
   val vmList0 = VMUtils.getCustomVM(Vram,Vstorage,Vbw,Vpe_cap,Vpe_count,VMcount,VCloudletScheduler,enableVerticalScaling)
   val vmList1 = VMUtils.getCustomVM(Vram,Vstorage,Vbw,Vpe_cap,Vpe_count,VMcount,VCloudletScheduler,enableVerticalScaling)
 
@@ -67,27 +67,28 @@ import java.util.List
     val dc0 = DataCenterUtils.getSimpleDataCenter(multiDatacenterImplementation)
     val dc1 = DataCenterUtils.getSimpleDataCenter(multiDatacenterImplementation)
 
+    //set cost parameters to datacenter
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
       .setCostPerMem(ramCost)
       .setCostPerStorage(storageCost)
       .setCostPerBw(BWCost);
 
+    //set cost parameters to datacenter
     dc1.getCharacteristics()
       .setCostPerSecond(timeCost)
       .setCostPerMem(ramCost)
       .setCostPerStorage(storageCost)
       .setCostPerBw(BWCost);
 
+    //set network topology between datacenters and respective brokers as well as between datacenters to implement InterDatacenter vmMigration
     NetworkUtils.createNetwork(multiDatacenterImplementation,dc0,dc1,broker0,broker1)
 
-    //create VMs and submit to broker
-    //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
+    //Submit Vms to broker
     broker0.submitVmList(vmList0)
     broker1.submitVmList(vmList1)
 
-    //Create cloudletts and submit to broker
-
+    //client cloudlettes are passed through a loadbalancer which assigns jobs to respective broker of nearest Availabiliy zone
     LoadBalanceUtils.loadBalance(broker0,broker1)
 
     /*Starts the simulation and waits all cloudlets to be executed, automatically
@@ -97,20 +98,22 @@ import java.util.List
     /*Prints the results when the simulation is over*/
     logger.info("MultiDatacenterImplementation Datacenter0 : ")
     new CloudletsTableBuilder(broker0.getCloudletFinishedList).build()
+
+    //Print cost data
     printTotalVmsCost(broker0)
+
+    //Print Powerconsumption data
     PowerUtils.getPowerConsumptionStats(dc0.getHostList)
 
     logger.info("MultiDatacenterImplementation Datacenter1 : ")
     new CloudletsTableBuilder(broker1.getCloudletFinishedList).build()
+
+    //Print Cost data
     printTotalVmsCost(broker1)
+
+    //Print Powerconsumption data
     PowerUtils.getPowerConsumptionStats(dc1.getHostList)
 
   }
-
-//  import org.cloudsimplus.listeners.EventInfo
-//
-//  def onClockTickListener(evt: EventInfo): Unit = {
-//    vmList.forEach((vm) => System.out.printf("\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n", evt.getTime, vm.getId, vm.getCpuPercentUtilization * 100.0, vm.getNumberOfPes, vm.getCloudletScheduler.getCloudletExecList.size, vm.getRam.getPercentUtilization * 100, vm.getRam.getAllocatedResource))
-//  }
 
 }

@@ -10,7 +10,7 @@ object CostUtils {
   //logger init
   val logger = CreateLogger(classOf[CostUtils.type])
   
-  //prints cost of running simulation
+  //calculate and prints cost after running simulation
    def printTotalVmsCost(broker0: DatacenterBrokerSimple): Unit = {
 
     //get list of VM from broker

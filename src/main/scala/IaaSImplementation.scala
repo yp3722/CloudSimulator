@@ -12,7 +12,7 @@ import org.cloudsimplus.builders.tables.CloudletsTableBuilder
 import utils.CostUtils.printTotalVmsCost
 import utils.HostUtils.*
 import utils.VMUtils.getCustomVM
-
+import org.cloudsimplus.listeners.EventInfo
 import java.util.List
 
 object IaaSImplementation {
@@ -64,6 +64,7 @@ object IaaSImplementation {
     //Creates a Datacenter with a list of Hosts
     val dc0 = DataCenterUtils.getSimpleDataCenter(IaaS_simulation)
 
+    //set cost parameters to datacenter
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
       .setCostPerMem(ramCost)
@@ -86,13 +87,16 @@ object IaaSImplementation {
     logger.info("starting IaaS simulation")
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
     logger.info("End of IaaS simulation")
-    
+
+    //Print Cost data
     printTotalVmsCost(broker)
+
+    //Print Powerconsumption data
     PowerUtils.getPowerConsumptionStats(dc0.getHostList)
 
   }
 
-  import org.cloudsimplus.listeners.EventInfo
+
 
   def onClockTickListener(evt: EventInfo): Unit = {
     vmList.forEach((vm) => System.out.printf("\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n", evt.getTime, vm.getId, vm.getCpuPercentUtilization * 100.0, vm.getNumberOfPes, vm.getCloudletScheduler.getCloudletExecList.size, vm.getRam.getPercentUtilization * 100, vm.getRam.getAllocatedResource))

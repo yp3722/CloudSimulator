@@ -18,11 +18,11 @@ import java.util.List
 object PaaSImplementation {
 
 
-  //vm parameters from user
+  //vm parameters from user from cloud provided options as this is PaaS model
   val vmtype = PaaSParamsConfig.getVMType
   val vmcount = PaaSParamsConfig.getVMCount
 
-  //application parameters form user
+  //application parameters form user as this is PaaS model
   val minimumUtilizationPaaS = PaaSParamsConfig.getApplicationMinUtil
   val maximumUtilizationPaaS = PaaSParamsConfig.getApplicationMaxUtil
   val lengthPaaS = PaaSParamsConfig.getCloudletLen
@@ -48,7 +48,7 @@ object PaaSImplementation {
     //Creates a Broker that will act on behalf of a cloud user (customer).
     val broker = new DatacenterBrokerSimple(PaaS_simulation)
 
-    //Creates a Datacenter with a list of Hosts.
+    //Creates a Datacenter with a list of Hosts and add cost simulation data
     val dc0 = DataCenterUtils.getSimpleDataCenter(PaaS_simulation)
     dc0.getCharacteristics()
       .setCostPerSecond(timeCost)
@@ -57,10 +57,9 @@ object PaaSImplementation {
       .setCostPerBw(BWCost);
 
     //create VMs and submit to broker
-    //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
     broker.submitVmList(utils.VMUtils.getVMSimple(vmtype,vmcount))
 
-    //Create cloudletts and submit to broker
+    //Create cloudletts and submit to broker as per user specification
     broker.submitCloudletList(CloudletUtils.getUserApplicationCloudlet(minimumUtilizationPaaS,maximumUtilizationPaaS,lengthPaaS,applicatonCount,peCountPaaS,enableDelay))
 
     /*Starts the simulation and waits all cloudlets to be executed, automatically
@@ -72,7 +71,10 @@ object PaaSImplementation {
     new CloudletsTableBuilder(broker.getCloudletFinishedList).build()
     logger.info("End of PaaS simulation")
 
+    //Print Cost data
     printTotalVmsCost(broker)
+
+    //Print Powerconsumption data
     PowerUtils.getPowerConsumptionStats(dc0.getHostList)
   }
 

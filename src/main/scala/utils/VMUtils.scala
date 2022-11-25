@@ -44,15 +44,13 @@ object VMUtils {
   val pe_cap_large = VMConfigLarge.getVPECapacity
   val pe_count_large = VMConfigLarge.getVPECount
 
-  //Vertical PE Scaling params
+  //Vertical PE Scaling threshold params
   def getLowerCpuUtilizationThreshold(vm: Vm) = IaaSParamsConfig.getLowerUtilThreshold
   def getUpperCpuUtilizationThreshold(vm:Vm) = IaaSParamsConfig.getUpperUtilThreshold
 
-  //
-  val peScalingFactor = 0.1
   
   
-  //  retuns list of VMs
+  //  returns list of VMs for PaaS applications
   def getVMSimple ( vmtype :String , vmcount: Int , Scheduler : String = "" ): java.util.List[Vm] = {
 
     val ram = if(vmtype == "SMALL") then ram_small else if(vmtype == "MEDIUM") then ram_med else ram_large
@@ -67,6 +65,7 @@ object VMUtils {
 
   }
 
+  //get custom vms based on IaaS config
   def getCustomVM(ram:Int,storage:Int,bw:Int,mipsCapacity:Int,peCount:Int,vmCount:Int,scheduler: String,enableVerticalPEScaling:Boolean = false, enableHorizontalScaling:Boolean= false): java.util.List[Vm] = {
 
 
@@ -92,6 +91,7 @@ object VMUtils {
 
   }
 
+  //sets vertical scaling
   def createVerticalPeScaling(): VerticalVmScaling ={
 
 
@@ -104,6 +104,7 @@ object VMUtils {
   }
 
 
+  //sets horizontal scaling
   def createHorizontalVmScaling(vm: Vm): Unit = {
     val horizontalScaling = new HorizontalVmScalingSimple
     horizontalScaling.setOverloadPredicate(isVmOverloaded)
@@ -120,13 +121,16 @@ object VMUtils {
   }
 
 
+  //function checks state of vm
   def isVmOverloaded(vm: Vm):Boolean = {
 
-    val value = vm.getHostRamUtilization
+    val value = vm.getHostCpuUtilization()
     if (value>0.7) then logger.warn("Vm overloaded!")
     value > 0.7
 
   }
 
+  // PE Scaling factor
+  val peScalingFactor = 0.1
 
 }
