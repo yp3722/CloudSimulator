@@ -29,8 +29,9 @@ object PowerUtils {
     val totalPowerConsumption = cpuUtilList.reduce((w1,w2)=>w1+w2)
     val avgPowerConsumption = totalPowerConsumption/noOfHosts
 
-    logger.debug("Total Power consumption = ",totalPowerConsumption)
-    logger.debug("Avg Power consumption = ",avgPowerConsumption)
+    System.out.println("Total Power consumption = "+totalPowerConsumption)
+    System.out.println("Avg Power consumption = "+avgPowerConsumption)
+
   }
 
 

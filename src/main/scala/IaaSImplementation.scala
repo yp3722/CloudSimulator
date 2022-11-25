@@ -73,7 +73,7 @@ object IaaSImplementation {
     //create VMs and submit to broker
     //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
     broker.submitVmList(vmList)
-    broker.setVmDestructionDelay(2);
+    broker.setVmDestructionDelay(10);
 
     //Create cloudletts and submit to broker
     broker.submitCloudletList(CloudletUtils.getUserApplicationCloudlet(minimumUtilizationIaaS,maximumUtilizationIaaS,lengthIaaS,applicatonCount,peCountIaaS,enableDelay))
@@ -95,7 +95,7 @@ object IaaSImplementation {
   import org.cloudsimplus.listeners.EventInfo
 
   def onClockTickListener(evt: EventInfo): Unit = {
-    //vmList.forEach((vm) => System.out.printf("\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n", evt.getTime, vm.getId, vm.getCpuPercentUtilization * 100.0, vm.getNumberOfPes, vm.getCloudletScheduler.getCloudletExecList.size, vm.getRam.getPercentUtilization * 100, vm.getRam.getAllocatedResource))
+    vmList.forEach((vm) => System.out.printf("\t\tTime %6.1f: Vm %d CPU Usage: %6.2f%% (%2d vCPUs. Running Cloudlets: #%d). RAM usage: %.2f%% (%d MB)%n", evt.getTime, vm.getId, vm.getCpuPercentUtilization * 100.0, vm.getNumberOfPes, vm.getCloudletScheduler.getCloudletExecList.size, vm.getRam.getPercentUtilization * 100, vm.getRam.getAllocatedResource))
   }
 
 }
