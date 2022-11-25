@@ -327,6 +327,9 @@ CloudletConfig{
 
 
 # Output
+## SaaS implementation
+### Scheduling 40 instances of App A 
+![img_6.png](img_6.png)
 
 ## PaaS implementation 
 
