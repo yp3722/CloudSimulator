@@ -41,9 +41,10 @@ object CloudletUtils {
   //returns list of custom cloudlets based on user requirements
   def getUserApplicationCloudlet(min_util:Double,max_util:Double,cl_len:Int,cl_numbers:Int,pe_required:Int,enableSubmissionDelay:Boolean = false): java.util.List[CloudletSimple] = {
 
-    val utilizationModel = new UtilizationModelDynamic(min_util, max_util)
+
     scala.collection.immutable.List.tabulate(cl_numbers)(
       element => {
+        val utilizationModel = new UtilizationModelDynamic(min_util, max_util)
         val clet = new CloudletSimple(cl_len, pe_required, utilizationModel)
         //set submission delay 
         if enableSubmissionDelay then clet.setSubmissionDelay(rand.between(1,10)) else {}
@@ -51,6 +52,18 @@ object CloudletUtils {
       }
     ).asJava
 
+  }
+
+  def getMapReduceCloudlet(cl_numbers:Int,cl_lenght:Int,pe_required:Int): java.util.List[CloudletSimple] ={
+
+    scala.collection.immutable.List.tabulate(cl_numbers*5)(
+      element => {
+        val delay = if (element>cl_numbers) rand.between(10+element,25+element) else 1
+        val c = new CloudletSimple(5*cl_lenght/(delay), pe_required)
+        c.setSubmissionDelay(delay)
+        c
+      }
+    ).asJava
   }
 
 

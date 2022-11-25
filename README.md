@@ -1,11 +1,19 @@
 # CloudSimulator - Yash Pharande
 
-A tool for benchmarking various cloud datacenter implementation and workloads
+A CloudDatacenter Simulation which can be used as a tool for benchmarking various cloud datacenter implementation and workloads
 
 # Features
 * Allows for easy configuration of cloud datacenter architecture and modeling of workloads(no coding required from the user!!!)
 * Defines different levels of access control in the form of cloud computing models ie SaaS, PaaS, IaaS etc
-* Offers high degree of customization of various parameters (AllocationPolicies, Network Topologies , LoadBalancing , Vertical Scaling, Scheduling Policies etc)
+* Offers high degree of customization of various parameters :
+    * **VmAllocationPolicies** - Best Fit / First Fit / Round Robin
+    * **VmScheduling** - Time Shared / Space Shared
+    * **CloudletteScheduling** - Time Shared / Space Shared
+    * **ClourletteResourceUtilization Modes**
+    * **VmAutoscaling** - Horizontal / Vertical
+    * **NetworkTopology**
+    * **PowerConsumption Modeling**
+    * **Cost Modeling**
 
 # Prerequisites
 This projects uses the following libraries:
@@ -16,7 +24,8 @@ This projects uses the following libraries:
 - Scalatest Framework
 - typesafeConfig
 
-
+# Architecture
+![img_7.png](img_7.png)
 
 # How to Run
 To run this project:
@@ -160,6 +169,43 @@ IaaS{
 ```
 User dosenot have access to change VMAllocation, VMMigration and Scheduling parameters the cloud org retains control over it
 
+### MultiDataCenter Implementation for complex Diffuse Computation Cloudlettes
+```
+MultiDatacenter{
+    clientA{
+        # 0 = closer to Datacenter0 or 1 = closer to Datacenter1
+        proximity = 0
+
+        #diffuse computation job params
+        #number of jobs
+        count = 15
+
+        #lenght of job
+        lenght = 1000
+
+        #pe requirement
+        peRequired = 2
+    }
+
+    clientB{
+            # 0 = closer to Datacenter0 or 1 = closer to Datacenter1
+            proximity = 1
+
+            #diffuse computation job params
+            #number of jobs
+            count = 10
+
+            #lenght of job
+            lenght = 2000
+
+            #pe requirement
+            peRequired = 2
+        }
+
+
+    #To change vm parameters modify the IaaS.VM config within this document
+}
+```
 # Configuration options available to a CloudOrg
 
 Orgspace configurations are found in Default.conf file
@@ -225,6 +271,36 @@ hostConfig {
     #VM Scheduling policy ("TIME" for timeshared or "SPACE" for spaceshared)
     vmScheduler = "SPACE"
 }
+```
+
+## NetworkTopology Parameters
+
+```
+NetworkTopology{
+    # in Mbps
+    bandwidth{
+            #broker0 and datacenter0
+            brokerDatacenter0 = 100.0
+
+            #broker1 and datacenter1
+            brokerDatacenter1 = 110.0
+
+            #datacenter1 and datacenter0
+            datacenters = 500.0
+    }
+
+
+    #in secs
+    latency{
+            #broker0 and datacenter0
+            brokerDatacenter0 = 3.0
+
+            #broker1 and datacenter1
+            brokerDatacenter1 = 6.0
+
+            #datacenter1 and datacenter0
+            datacenters = 15.0
+    }
 ```
 
 ### PaaS VM parameters
@@ -326,7 +402,7 @@ CloudletConfig{
 
 
 
-# Output
+# Few Output Examples
 ## SaaS implementation
 ### Scheduling 40 instances of App A 
 ![img_6.png](img_6.png)
@@ -343,17 +419,178 @@ CloudletConfig{
 
 ## IaaS Implementation 
 
-### Vertical CPU AutoScaling Enabled
+### Vertical CPU AutoScaling Disabled
 ![img_4.png](img_4.png)
 # VS
+### Vertical CPU AutoScaling Enabled
 ![img_5.png](img_5.png)
 
 #### *Notice even when 9 cpu cores were assigned ExecTime did not change indicating Bottleneck of other resourecs RAM, Bandwidth*
 
 ```
 Users can change the various parameters and run their own simulation.
- However certain combinations will lead in simulation failing 
- For eg - trying to create vms which exceed the host resources that are available, 
- improper configuration of allocation policy or VmScheduler along with autoscaling etc
+However certain combinations will lead in simulation failing 
+For eg - trying to create vms which exceed the host resources that are available, 
+improper configuration of allocation policy or VmScheduler along with autoscaling etc
 ```
 
+### MultiDatacenter Implementation with Network Topology
+
+```
+01:48:57.410 [main] INFO  MultiDatacenterImplementation$ - MultiDatacenterImplementation Datacenter0 : 
+
+
+                                               SIMULATION RESULTS
+
+|Cloudlet|Status |DC|Host|Host PEs |VM|VM PEs   |CloudletLen|FinishedLen|CloudletPEs|StartTime|FinishTime|ExecTime
+|--------|-------|--|----|---------|--|---------|-----------|-----------|-----------|---------|----------|--------
+|      ID|       |ID|  ID|CPU cores|ID|CPU cores|         MI|         MI|  CPU cores|  Seconds|   Seconds| Seconds
+|       0|SUCCESS| 4|   0|       16| 0|        2|       5000|       5000|          2|       61|        63|       2
+|       1|SUCCESS| 4|   1|       16| 1|        2|       5000|       5000|          2|       61|        63|       2
+|       2|SUCCESS| 4|   2|       16| 2|        2|       5000|       5000|          2|       61|        63|       2
+|       3|SUCCESS| 4|   3|       16| 3|        2|       5000|       5000|          2|       61|        63|       2
+|       4|SUCCESS| 4|   0|       16| 0|        2|       5000|       5000|          2|       63|        65|       2
+|       5|SUCCESS| 4|   1|       16| 1|        2|       5000|       5000|          2|       63|        65|       2
+|       6|SUCCESS| 4|   2|       16| 2|        2|       5000|       5000|          2|       63|        65|       2
+|       7|SUCCESS| 4|   3|       16| 3|        2|       5000|       5000|          2|       63|        65|       2
+|       8|SUCCESS| 4|   0|       16| 0|        2|       5000|       5000|          2|       65|        66|       2
+|       9|SUCCESS| 4|   1|       16| 1|        2|       5000|       5000|          2|       65|        66|       2
+|      10|SUCCESS| 4|   2|       16| 2|        2|       5000|       5000|          2|       65|        66|       2
+|      11|SUCCESS| 4|   3|       16| 3|        2|       5000|       5000|          2|       65|        66|       2
+|      12|SUCCESS| 4|   0|       16| 0|        2|       5000|       5000|          2|       67|        68|       2
+|      13|SUCCESS| 4|   1|       16| 1|        2|       5000|       5000|          2|       67|        68|       2
+|      14|SUCCESS| 4|   2|       16| 2|        2|       5000|       5000|          2|       67|        68|       2
+|      15|SUCCESS| 4|   3|       16| 3|        2|       5000|       5000|          2|       67|        68|       2
+|      17|SUCCESS| 4|   1|       16| 1|        2|        178|        178|          2|       88|        88|       0
+|      16|SUCCESS| 4|   0|       16| 0|        2|        151|        151|          2|       93|        93|       0
+|      18|SUCCESS| 4|   2|       16| 2|        2|        131|        131|          2|       98|        98|       0
+|      26|SUCCESS| 4|   2|       16| 2|        2|        128|        128|          2|       99|        99|       0
+|      19|SUCCESS| 4|   3|       16| 3|        2|        128|        128|          2|       99|        99|       0
+|      21|SUCCESS| 4|   1|       16| 1|        2|        125|        125|          2|      100|       100|       0
+|      23|SUCCESS| 4|   3|       16| 3|        2|        125|        125|          2|      100|       100|       0
+|      29|SUCCESS| 4|   1|       16| 1|        2|        119|        119|          2|      102|       102|       0
+|      30|SUCCESS| 4|   2|       16| 2|        2|        119|        119|          2|      102|       102|       0
+|      22|SUCCESS| 4|   2|       16| 2|        2|        116|        116|          2|      103|       103|       0
+|      20|SUCCESS| 4|   0|       16| 0|        2|        113|        113|          2|      104|       104|       0
+|      32|SUCCESS| 4|   0|       16| 0|        2|        113|        113|          2|      104|       105|       0
+|      24|SUCCESS| 4|   0|       16| 0|        2|        108|        108|          2|      106|       106|       0
+|      25|SUCCESS| 4|   1|       16| 1|        2|        108|        108|          2|      106|       106|       0
+|      27|SUCCESS| 4|   3|       16| 3|        2|        108|        108|          2|      106|       106|       0
+|      28|SUCCESS| 4|   0|       16| 0|        2|        102|        102|          2|      109|       109|       0
+|      38|SUCCESS| 4|   2|       16| 2|        2|        102|        102|          2|      109|       109|       0
+|      31|SUCCESS| 4|   3|       16| 3|        2|        102|        102|          2|      109|       109|       0
+|      36|SUCCESS| 4|   0|       16| 0|        2|         98|         98|          2|      111|       111|       0
+|      40|SUCCESS| 4|   0|       16| 0|        2|         94|         94|          2|      113|       113|       0
+|      33|SUCCESS| 4|   1|       16| 1|        2|         94|         94|          2|      113|       113|       0
+|      34|SUCCESS| 4|   2|       16| 2|        2|         94|         94|          2|      113|       113|       0
+|      43|SUCCESS| 4|   3|       16| 3|        2|         92|         92|          2|      114|       114|       0
+|      41|SUCCESS| 4|   1|       16| 1|        2|         90|         90|          2|      115|       115|       0
+|      39|SUCCESS| 4|   3|       16| 3|        2|         90|         90|          2|      115|       115|       0
+|      42|SUCCESS| 4|   2|       16| 2|        2|         87|         87|          2|      117|       117|       0
+|      48|SUCCESS| 4|   0|       16| 0|        2|         86|         86|          2|      118|       118|       0
+|      45|SUCCESS| 4|   1|       16| 1|        2|         86|         86|          2|      118|       118|       0
+|      37|SUCCESS| 4|   1|       16| 1|        2|         84|         84|          2|      119|       119|       0
+|      35|SUCCESS| 4|   3|       16| 3|        2|         84|         84|          2|      119|       119|       0
+|      44|SUCCESS| 4|   0|       16| 0|        2|         83|         83|          2|      120|       120|       0
+|      52|SUCCESS| 4|   0|       16| 0|        2|         79|         79|          2|      123|       123|       0
+|      46|SUCCESS| 4|   2|       16| 2|        2|         79|         79|          2|      123|       123|       0
+|      47|SUCCESS| 4|   3|       16| 3|        2|         79|         79|          2|      123|       123|       0
+|      50|SUCCESS| 4|   2|       16| 2|        2|         78|         78|          2|      124|       124|       0
+|      55|SUCCESS| 4|   3|       16| 3|        2|         76|         76|          2|      125|       125|       0
+|      56|SUCCESS| 4|   0|       16| 0|        2|         73|         73|          2|      128|       128|       0
+|      49|SUCCESS| 4|   1|       16| 1|        2|         69|         69|          2|      132|       132|       0
+|      53|SUCCESS| 4|   1|       16| 1|        2|         69|         69|          2|      132|       133|       0
+|      57|SUCCESS| 4|   1|       16| 1|        2|         67|         67|          2|      134|       134|       0
+|      59|SUCCESS| 4|   3|       16| 3|        2|         67|         67|          2|      134|       134|       0
+|      54|SUCCESS| 4|   2|       16| 2|        2|         66|         66|          2|      135|       135|       0
+|      51|SUCCESS| 4|   3|       16| 3|        2|         66|         66|          2|      135|       135|       0
+|      61|SUCCESS| 4|   1|       16| 1|        2|         65|         65|          2|      136|       136|       0
+|      62|SUCCESS| 4|   2|       16| 2|        2|         64|         64|          2|      138|       138|       0
+|      64|SUCCESS| 4|   0|       16| 0|        2|         61|         61|          2|      141|       141|       0
+|      58|SUCCESS| 4|   2|       16| 2|        2|         61|         61|          2|      141|       141|       0
+|      66|SUCCESS| 4|   2|       16| 2|        2|         61|         61|          2|      141|       142|       0
+|      60|SUCCESS| 4|   0|       16| 0|        2|         60|         60|          2|      143|       143|       0
+|      71|SUCCESS| 4|   3|       16| 3|        2|         60|         60|          2|      143|       143|       0
+|      70|SUCCESS| 4|   2|       16| 2|        2|         58|         58|          2|      145|       145|       0
+|      69|SUCCESS| 4|   1|       16| 1|        2|         58|         58|          2|      146|       146|       0
+|      65|SUCCESS| 4|   1|       16| 1|        2|         57|         57|          2|      147|       147|       0
+|      63|SUCCESS| 4|   3|       16| 3|        2|         57|         57|          2|      147|       147|       0
+|      73|SUCCESS| 4|   1|       16| 1|        2|         56|         56|          2|      149|       149|       0
+|      67|SUCCESS| 4|   3|       16| 3|        2|         55|         55|          2|      150|       150|       0
+|      68|SUCCESS| 4|   0|       16| 0|        2|         54|         54|          2|      152|       152|       0
+|      72|SUCCESS| 4|   0|       16| 0|        2|         54|         54|          2|      152|       153|       0
+|      74|SUCCESS| 4|   2|       16| 2|        2|         52|         52|          2|      156|       156|       0
+01:48:57.466 [main] INFO  utils.CostUtils$ - Total Cost : 376.36077632
+01:48:57.467 [main] INFO  utils.CostUtils$ - Total Processing Cost : 0.3607763200000001
+01:48:57.468 [main] INFO  utils.CostUtils$ - Total Memory Cost : 256.0
+01:48:57.469 [main] INFO  utils.CostUtils$ - Total Bandwidth Cost : 20.0
+01:48:57.470 [main] INFO  utils.CostUtils$ - Total Storage Cost : 100.0
+Total Power consumption = 700.0682722001638
+Avg Power consumption = 35.003413610008195
+01:48:57.476 [main] INFO  MultiDatacenterImplementation$ - MultiDatacenterImplementation Datacenter1 : 
+
+
+                                               SIMULATION RESULTS
+
+|Cloudlet|Status |DC|Host|Host PEs |VM|VM PEs   |CloudletLen|FinishedLen|CloudletPEs|StartTime|FinishTime|ExecTime
+|--------|-------|--|----|---------|--|---------|-----------|-----------|-----------|---------|----------|--------
+|      ID|       |ID|  ID|CPU cores|ID|CPU cores|         MI|         MI|  CPU cores|  Seconds|   Seconds| Seconds
+|       0|SUCCESS| 3|   0|       16| 0|        2|      10000|      10000|          2|       64|        67|       3
+|       1|SUCCESS| 3|   1|       16| 1|        2|      10000|      10000|          2|       64|        67|       3
+|       2|SUCCESS| 3|   2|       16| 2|        2|      10000|      10000|          2|       64|        67|       3
+|       3|SUCCESS| 3|   3|       16| 3|        2|      10000|      10000|          2|       64|        67|       3
+|       4|SUCCESS| 3|   0|       16| 0|        2|      10000|      10000|          2|       68|        70|       3
+|       5|SUCCESS| 3|   1|       16| 1|        2|      10000|      10000|          2|       68|        70|       3
+|       6|SUCCESS| 3|   2|       16| 2|        2|      10000|      10000|          2|       68|        70|       3
+|       7|SUCCESS| 3|   3|       16| 3|        2|      10000|      10000|          2|       68|        70|       3
+|       8|SUCCESS| 3|   0|       16| 0|        2|      10000|      10000|          2|       71|        74|       3
+|       9|SUCCESS| 3|   1|       16| 1|        2|      10000|      10000|          2|       71|        74|       3
+|      10|SUCCESS| 3|   2|       16| 2|        2|      10000|      10000|          2|       71|        74|       3
+|      11|SUCCESS| 3|   3|       16| 3|        2|        416|        416|          2|       87|        87|       0
+|      15|SUCCESS| 3|   3|       16| 3|        2|        400|        400|          2|       88|        88|       0
+|      14|SUCCESS| 3|   2|       16| 2|        2|        384|        384|          2|       89|        89|       0
+|      13|SUCCESS| 3|   1|       16| 1|        2|        344|        344|          2|       92|        92|       0
+|      16|SUCCESS| 3|   0|       16| 0|        2|        322|        322|          2|       94|        94|       0
+|      18|SUCCESS| 3|   2|       16| 2|        2|        294|        294|          2|       97|        97|       0
+|      24|SUCCESS| 3|   0|       16| 0|        2|        285|        285|          2|       98|        98|       0
+|      12|SUCCESS| 3|   0|       16| 0|        2|        277|        277|          2|       99|        99|       0
+|      17|SUCCESS| 3|   1|       16| 1|        2|        270|        270|          2|      100|       100|       0
+|      28|SUCCESS| 3|   0|       16| 0|        2|        238|        238|          2|      105|       105|       0
+|      22|SUCCESS| 3|   2|       16| 2|        2|        238|        238|          2|      105|       105|       0
+|      19|SUCCESS| 3|   3|       16| 3|        2|        238|        238|          2|      105|       105|       0
+|      23|SUCCESS| 3|   3|       16| 3|        2|        238|        238|          2|      105|       105|       0
+|      20|SUCCESS| 3|   0|       16| 0|        2|        232|        232|          2|      106|       106|       0
+|      21|SUCCESS| 3|   1|       16| 1|        2|        227|        227|          2|      107|       107|       0
+|      30|SUCCESS| 3|   2|       16| 2|        2|        227|        227|          2|      107|       107|       0
+|      29|SUCCESS| 3|   1|       16| 1|        2|        227|        227|          2|      107|       107|       0
+|      25|SUCCESS| 3|   1|       16| 1|        2|        222|        222|          2|      108|       108|       0
+|      31|SUCCESS| 3|   3|       16| 3|        2|        217|        217|          2|      109|       109|       0
+|      26|SUCCESS| 3|   2|       16| 2|        2|        212|        212|          2|      110|       110|       0
+|      35|SUCCESS| 3|   3|       16| 3|        2|        212|        212|          2|      110|       110|       0
+|      27|SUCCESS| 3|   3|       16| 3|        2|        208|        208|          2|      111|       111|       0
+|      33|SUCCESS| 3|   1|       16| 1|        2|        204|        204|          2|      112|       112|       0
+|      32|SUCCESS| 3|   0|       16| 0|        2|        196|        196|          2|      114|       114|       0
+|      38|SUCCESS| 3|   2|       16| 2|        2|        196|        196|          2|      114|       114|       0
+|      37|SUCCESS| 3|   1|       16| 1|        2|        192|        192|          2|      115|       115|       0
+|      34|SUCCESS| 3|   2|       16| 2|        2|        192|        192|          2|      115|       115|       0
+|      42|SUCCESS| 3|   2|       16| 2|        2|        192|        192|          2|      115|       115|       0
+|      36|SUCCESS| 3|   0|       16| 0|        2|        188|        188|          2|      116|       116|       0
+|      41|SUCCESS| 3|   1|       16| 1|        2|        175|        175|          2|      120|       120|       0
+|      39|SUCCESS| 3|   3|       16| 3|        2|        175|        175|          2|      120|       120|       0
+|      43|SUCCESS| 3|   3|       16| 3|        2|        175|        175|          2|      120|       120|       0
+|      40|SUCCESS| 3|   0|       16| 0|        2|        163|        163|          2|      124|       124|       0
+|      45|SUCCESS| 3|   1|       16| 1|        2|        156|        156|          2|      127|       127|       0
+|      47|SUCCESS| 3|   3|       16| 3|        2|        156|        156|          2|      127|       127|       0
+|      48|SUCCESS| 3|   0|       16| 0|        2|        149|        149|          2|      130|       130|       0
+|      46|SUCCESS| 3|   2|       16| 2|        2|        149|        149|          2|      130|       130|       0
+|      44|SUCCESS| 3|   0|       16| 0|        2|        147|        147|          2|      131|       131|       0
+|      49|SUCCESS| 3|   1|       16| 1|        2|        136|        136|          2|      136|       136|       0
+01:48:57.495 [main] INFO  utils.CostUtils$ - Total Cost : 376.41861632
+01:48:57.495 [main] INFO  utils.CostUtils$ - Total Processing Cost : 0.4186163200000001
+01:48:57.495 [main] INFO  utils.CostUtils$ - Total Memory Cost : 256.0
+01:48:57.495 [main] INFO  utils.CostUtils$ - Total Bandwidth Cost : 20.0
+01:48:57.495 [main] INFO  utils.CostUtils$ - Total Storage Cost : 100.0
+Total Power consumption = 700.0794205166637
+Avg Power consumption = 35.00397102583319
+
+```
