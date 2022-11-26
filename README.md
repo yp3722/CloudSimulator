@@ -594,3 +594,5 @@ Total Power consumption = 700.0794205166637
 Avg Power consumption = 35.00397102583319
 
 ```
+
+Note: Autoscaling if not configured correctly will cause runtime exceptions
